@@ -49,11 +49,15 @@ endef
 
 define Package/bitcave/install
 	$(INSTALL_DIR) \
-		$(1)/usr/sbin 
+		$(1)/usr/sbin \
+		$(1)/etc/hotplug.d/iface
 
 	$(CP)  \
-		./files/*.sh \
+		./files/bitcave_lib.sh.sh \
 		$(1)/usr/sbin
+	$(CP)  \
+		./files/99-if-wan-awareness.sh \
+		$(1)/etc/hotplug.d/iface
 endef
 
 $(eval $(call BuildPackage,bitcave))
