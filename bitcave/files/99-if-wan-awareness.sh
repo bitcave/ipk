@@ -14,7 +14,7 @@ if [ "$INTERFACE" = "wan" ] ; then
 	fi
 	if [ "$ACTION" = "ifdown" ] ; then
 		logger -t "IFDOWN event fired.."
-		/etc/init.d/openvpn stop :q
+		/etc/init.d/openvpn stop 
 
 	fi
 fi
