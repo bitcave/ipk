@@ -209,7 +209,7 @@ check_max_tun_number() {
 		return 99
 	fi
 }
-get_tun_number(){
+get_tun_name(){
 	local used_vpn_cnt=$(wc -l $tun_tmpfile | cut -d ' ' -f1 )
 	local new_name="${device_prefix}""${used_vpn_cnt}"
 	
@@ -221,7 +221,7 @@ get_tun_number(){
 	else
 		#tun name is already used
 		for  num in  $(seq 1 $max_vpn_settings)  ; do   # max_vpn_settings=9
-			echo "Testing $num "
+			#echo "Testing $num "
 			new_name="${device_prefix}""${num}"
 			if  ! grep -q "$new_name" "$tun_tmpfile"  ; then
 				echo "$new_name"

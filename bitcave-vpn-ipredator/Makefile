@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=bitcave-vpn-ipredator
 PKG_VERSION:=0.0.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 
 include $(INCLUDE_DIR)/package.mk
@@ -31,14 +31,16 @@ endef
 define Package/bitcave-vpn-ipredator/postinst
 	#!/bin/sh
 
-	exit 0echo "Setting up OpenVPN config"
+	. /usr/bin/bitcave_lib.sh
+	
+	echo "Setting up OpenVPN config"
 	touch /etc/config/openvpn
 	uci set openvpn.IPredator=openvpn
 	uci set openvpn.IPredator.enabled='0'
 	uci set openvpn.IPredator.client='1'
 	uci set openvpn.IPredator.dev='undef'
 	uci set openvpn.IPredator.proto='udp'
-	uci set openvpn.IPredator.resolv_retry='infinite'
+	uci set openvpn.IPredator.resolv_retry=$$( get_tun_name )
 	uci set openvpn.IPredator.float='1'
 	uci set openvpn.IPredator.nobind='1'
 	uci set openvpn.IPredator.persist_key='1'
@@ -54,12 +56,14 @@ define Package/bitcave-vpn-ipredator/postinst
 	uci set openvpn.IPredator.verb='3'
 	uci add_list openvpn.IPredator.tls_auth='/etc/openvpn/IPredator.se.ta.key'
 	uci add_list openvpn.IPredator.auth_user_pass='/etc/openvpn/IPredator.auth'
+	uci commit
 
 endef
 
 define Package/bitcave-vpn-ipredator/prerm
 	#!/bin/ssh
 	uci remove openvpn.IPredator
+	uci commit
 	exit 0
 endef
 

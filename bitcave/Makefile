@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=bitcave
-PKG_VERSION:=0.0.1
+PKG_VERSION:=0.0.2
 PKG_RELEASE:=1
 
 
@@ -53,7 +53,7 @@ define Package/bitcave/install
 		$(1)/etc/hotplug.d/iface
 
 	$(CP)  \
-		./files/bitcave_lib.sh.sh \
+		./files/bitcave_lib.sh \
 		$(1)/usr/sbin
 	$(CP)  \
 		./files/99-if-wan-awareness.sh \
