@@ -14,6 +14,7 @@ device_prefix="tun"
 ip_net="172.29"  
 network_number_start=28
 SSID_Name="Bitcave"
+Default_Password="Bitcave"  # Default password for Bitcave.Clear
 bitcave_slots=3  #Generate which amount of interfaces
 
 _get_firewall_zone_hole_name(){
@@ -88,7 +89,9 @@ _set_wifi_bitcave(){
 		uci set wireless."$wifi".encryption=none
 	else
 		uci set "wireless.radio0.disabled=0"
-		uci set wireless.@wifi-iface[0].ssid="${SSID_Name}"
+		uci set wireless.@wifi-iface[0].ssid="${SSID_Name}.Clear"
+		uci set wireless.@wifi-iface[0].encryption="psk2"
+		uci set wireless.@wifi-iface[0].key="${Default_Password}"
 		uci set wireless.@wifi-iface[0].disabled=0
 	fi
 
