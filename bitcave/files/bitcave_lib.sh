@@ -210,6 +210,7 @@ check_max_tun_number() {
 	fi
 }
 get_tun_name(){
+	create_tun_list   # Creates the temp file
 	local used_vpn_cnt=$(wc -l $tun_tmpfile | cut -d ' ' -f1 )
 	local new_name="${device_prefix}""${used_vpn_cnt}"
 	
