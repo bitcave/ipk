@@ -2,25 +2,20 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=bitcave-vpn-ipredator
 PKG_VERSION:=0.0.1
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/bitcave-vpn-ipredator/Default
+define Package/bitcave-vpn-ipredator
   SECTION:=utils
   CATEGORY:=Utilities
+  SUBMENU:=Bitcave
   TITLE:=bitcave-vpn-ipredator
   URL:=http://.,......
   PKGARCH:=all
   MAINTAINER:=Matthias Strubel <matthias.strubel@aod-rpg.de>
-#  SUBMENU:=
-endef
-
-define Package/bitcave-vpn-ipredator
-  $(call Package/bitcave-vpn-ipredator/Default)
-  DEPENDS:=openvpn-openssl
-  MENU:=1
+  DEPENDS:=bitcave
 endef
 
 define Package/bitcave-vpn-ipredator/description
@@ -31,16 +26,16 @@ endef
 define Package/bitcave-vpn-ipredator/postinst
 	#!/bin/sh
 
-	. /usr/bin/bitcave_lib.sh
+	. /usr/sbin/bitcave_lib.sh
 	
 	echo "Setting up OpenVPN config"
 	touch /etc/config/openvpn
 	uci set openvpn.IPredator=openvpn
 	uci set openvpn.IPredator.enabled='0'
 	uci set openvpn.IPredator.client='1'
-	uci set openvpn.IPredator.dev='undef'
+	uci set openvpn.IPredator.dev=$$( get_tun_name )
 	uci set openvpn.IPredator.proto='udp'
-	uci set openvpn.IPredator.resolv_retry=$$( get_tun_name )
+	uci set openvpn.IPredator.resolv_retry='infinite'
 	uci set openvpn.IPredator.float='1'
 	uci set openvpn.IPredator.nobind='1'
 	uci set openvpn.IPredator.persist_key='1'

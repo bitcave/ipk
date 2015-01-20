@@ -7,20 +7,15 @@ PKG_RELEASE:=1
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/bitcave-extroot/Default
+define Package/bitcave-extroot
   SECTION:=utils
   CATEGORY:=Utilities
   TITLE:=bitcave-extroot
   URL:=http://.,......
   PKGARCH:=all
   MAINTAINER:=Matthias Strubel <matthias.strubel@aod-rpg.de>
-#  SUBMENU:=
-endef
-
-define Package/bitcave-extroot
-  $(call Package/bitcave-extroot/Default)
+  SUBMENU:=Bitcave
   DEPENDS:=+kmod-usb-storage  +kmod-fs-ext4 +block-mount 
-  MENU:=1
 endef
 
 define Package/bitcave-extroot/description

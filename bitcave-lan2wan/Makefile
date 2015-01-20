@@ -7,20 +7,15 @@ PKG_RELEASE:=1
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/bitcave-lan2wan/Default
+define Package/bitcave-lan2wan
   SECTION:=utils
   CATEGORY:=Utilities
+  SUBMENU:=Bitcave
   TITLE:=bitcave-lan2wan
   URL:=http://.,......
   PKGARCH:=all
   MAINTAINER:=Matthias Strubel <matthias.strubel@aod-rpg.de>
-#  SUBMENU:=
-endef
-
-define Package/bitcave-lan2wan
-  $(call Package/bitcave-lan2wan/Default)
   DEPENDS:=
-  MENU:=1
 endef
 
 define Package/bitcave-lan2wan/description

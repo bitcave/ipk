@@ -215,7 +215,6 @@ get_tun_name(){
 	
 	if  ! grep -q "$new_name" "$tun_tmpfile"  ; then
 		#tun name is free
-		echo "."
 		echo "$new_name"
 		return 0
 	else

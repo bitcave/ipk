@@ -1,26 +1,21 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=bitcave
-PKG_VERSION:=0.0.2
+PKG_VERSION:=0.0.3
 PKG_RELEASE:=1
 
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/bitcave/Default
+define Package/bitcave
   SECTION:=utils
   CATEGORY:=Utilities
   TITLE:=bitcave
-  URL:=http://.,......
+  URL:=http://bitcave.io
   PKGARCH:=all
   MAINTAINER:=Matthias Strubel <matthias.strubel@aod-rpg.de>
-#  SUBMENU:=
-endef
-
-define Package/bitcave
-  $(call Package/bitcave/Default)
-  DEPENDS:=openvpn-openssl
-  MENU:=1
+  DEPENDS:=+openvpn-openssl
+  SUBMENU:=Bitcave
 endef
 
 define Package/bitcave/description
