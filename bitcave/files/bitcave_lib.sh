@@ -14,7 +14,7 @@ device_prefix="tun"
 ip_net="172.29"  
 network_number_start=28
 SSID_Name="Bitcave"
-Default_Password="Bitcave"  # Default password for Bitcave.Clear
+Default_Password="BitcaveC"  # Default password for Bitcave.Clear
 bitcave_slots=3  #Generate which amount of interfaces
 
 _get_firewall_zone_hole_name(){
