@@ -71,6 +71,9 @@ endef
 define Build/Configure
 endef
 
+define Package/conffiles
+	/etc/openvpn/IPredator.auth
+endef
 
 define Package/bitcave-vpn-ipredator/install
 	$(INSTALL_DIR) \
