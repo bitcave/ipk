@@ -1,0 +1,36 @@
+<%+header%>
+
+<h2><a id="content" name="content">Set OpenVPN Password for <%=vpn_name%></a></h2>      
+
+<form method="post" action="<%=REQUEST_URI%>">
+
+<div class="cbi-map">
+
+  <fieldset class="cbi-section-node">
+        <div class="cbi-value" id="user"><label class="cbi-value-title"><%:Username%></label>
+                <div class="cbi-value-field">
+                        <input type="text" class="cbi-input-text" onchange="cbi_d_update(this.id)" 
+name="bitcave.vpn.user" id="bitcave.vpn.user" value="" />
+                </div>
+        </div>
+  
+        <div class="cbi-value cbi-value-last" id="pass"><label class="cbi-value-title"><%:Password%></label>
+                <div class="cbi-value-field">
+                        <input type="password" class="cbi-input-password" onchange="cbi_d_update(this.id)" 
+name="bitcave.vpn.pass" id="bitcave.vpn.pass" value="" />
+                        <img src="/luci-static/resources/cbi/reload.gif" style="vertical-align:middle" 
+title="Reveal/hide password" onclick="var e = document.getElementById('bitcave.vpn.pass'); e.type = 
+(e.type=='password') ? 'text' : 'password';" />                                                    
+                </div>
+        </div>
+
+  </fieldset>
+</div>
+
+<div class="cbi-page-actions">
+        <input type="hidden" name="bitcave.vpn_name" value="<%=vpn_name%>" class="hidden" />
+        <input class="cbi-button cbi-button-apply" type="submit" name="cbi.apply" value="Save &#38; Apply" />
+</div>
+</form>
+
+<%+footer%> 
