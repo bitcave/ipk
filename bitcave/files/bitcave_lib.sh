@@ -206,7 +206,7 @@ _add_rt_alias(){
 	
 	local net_name=$( _get_network_bitcave_name "$bitcave_number" )
 	
-	grep -q "$tun_name" /etc/iproute2/rt_tables || \
+	grep -q "$net_name" /etc/iproute2/rt_tables || \
 		echo "10${bitcave_number}  ${net_name} "  >>  /etc/iproute2/rt_tables 
 
 }
@@ -272,7 +272,7 @@ bitcave_init(){
 
 		if [ "$num" -ne "1" ] ; then
 			local src_name=$( _get_firewall_zone_bitcave_name "$num" )
-			local dest_name=$( _get_network_hole_name "$num"  ) 
+			local dest_name=$( _get_firewall_zone_hole_name "$num"  ) 
 			_add_firwall_forward_rule "${src_name}" "${dest_name}" 
 		fi
 	done
