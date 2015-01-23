@@ -1,7 +1,11 @@
 #!/bin/sh
+##  Bitcave - Project  (c)2015 GPL-3
+##     Matthias Strubel  <matthias.strubel@aod-rpg.de>
+##
+## Uses the tun interface name, looks up and searches  in config/firewall
+##     to find the correct connected network from /etc/config/network
+##
 
-# Uses the tun interface and looks up & searches  in config/firewall
-#  to find the correct connected network from /etc/config/network
 
 
 
@@ -37,12 +41,12 @@ for  id in $fwd_ids ; do
         if  [ "$uci_dest" = "$fw_zone_name"  ]  ; then
                 # we found it
                 src_fw_name="$uci_src"
-                break
+		# Those two lines do the lookup for the physical device name. 
+		#   - will break on bridges.
+		uci_id=$( uci show firewall | grep name=${src_fw_name} | awk -F'[.=]' '{ print $2 }')
+		uci get "firewall."${uci_id}".network"
         fi
 done
 
-uci_id=$( uci show firewall | grep name=${src_fw_name} | awk -F'[.=]' '{ print $2 }')
-
-uci get "firewall."${uci_id}".network"
 
 return $?
