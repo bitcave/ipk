@@ -3,10 +3,10 @@
 ##     Matthias Strubel  <matthias.strubel@aod-rpg.de>
 ##
 ## The following script is for the iface-up hook of OpenVPN
-##    as a replace for the auto-distribution of routes into the routing table.
+##    as a replacement for the auto-distribution of routes into the routing table.
 ##
 ##  It fixes the Problem with VPN hosts like IPredator, which have the VPN Server
-##     in the same subnet like the VPN-tun interface have. So the VPN-Server must
+##     in the same subnet as the VPN-tun interface. So the VPN-Server must
 ##     be routed via a static route through the default gateway.
 ##
 ##  It uses the following variables from the exported environment by OpenVPN
@@ -18,11 +18,11 @@
 ##					(Used for storing data for the down script)
 ##      
 ##  Based upon $dev, a lookup of the connected interface (currently only one)
-##  is done and routing is setup, if not already configured.
+##  is done and routing is setup, if it is not already configured.
 ##
 ##  The trusted IP & ifconfig_local is saved for the interface down hook of OpenVPN
 ##  
-##   The Table alias is generated during Bitcave-Initialization an can be found in
+##   The Table alias is generated during Bitcave-Initialization and can be found in
 ##    	 /etc/iproute2/rt_tables 
 ##
 
