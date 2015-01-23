@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=bitcave
-PKG_VERSION:=0.0.3
+PKG_VERSION:=0.0.4
 PKG_RELEASE:=1
 
 
@@ -45,13 +45,23 @@ endef
 define Package/bitcave/install
 	$(INSTALL_DIR) \
 		$(1)/usr/sbin \
-		$(1)/etc/hotplug.d/iface
+		$(1)/etc/hotplug.d/iface \
+		$(1)/etc/openvpn 
 
 	$(CP)  \
 		./files/bitcave_lib.sh \
 		$(1)/usr/sbin
 	$(CP)  \
+		./files/convert_tun_to_lan.sh \
+		$(1)/usr/sbin		
+	$(CP)  \
 		./files/99-if-wan-awareness.sh \
+		$(1)/etc/hotplug.d/iface
+	$(CP)  \
+		./files/openvpn-**-up.sh \
+		$(1)/etc/hotplug.d/iface
+	$(CP)  \
+		./files/openvpn-**-down.sh \
 		$(1)/etc/hotplug.d/iface
 endef
 

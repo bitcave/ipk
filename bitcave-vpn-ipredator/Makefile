@@ -48,8 +48,10 @@ define Package/bitcave-vpn-ipredator/postinst
 	uci set openvpn.IPredator.passtos='1'
 	uci set openvpn.IPredator.remote='pw.openvpn.ipredator.se 1194'
 	uci set openvpn.IPredator.tls_client='1'
-	uci set openvpn.IPredator.route-noexec='1'
-	uci set openvpn.IPredator.route-nopull='1'
+	uci set openvpn.IPredator.route_noexec='0'
+	uci set openvpn.IPredator.down=/etc/openvpn/openvpn-var1-down.sh
+	uci set openvpn.IPredator.up=/etc/openvpn/openvpn-var1-up.sh
+	uci set openvpn.IPredator.route_nopull='1'
 	uci set openvpn.IPredator.verb='3'
 	uci add_list openvpn.IPredator.tls_auth='/etc/openvpn/IPredator.se.ta.key'
 	uci add_list openvpn.IPredator.auth_user_pass='/etc/openvpn/IPredator.auth'

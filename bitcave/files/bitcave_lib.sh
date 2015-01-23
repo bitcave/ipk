@@ -201,6 +201,15 @@ _add_firewall_zone_bitcave(){
 	return 0
 }
 
+_add_rt_alias(){
+	local bitcave_number="$1"
+	
+	local net_name=$( _get_network_bitcave_name "$bitcave_number" )
+	
+	grep -q "$tun_name" /etc/iproute2/rt_tables || \
+		echo "10${bitcave_number}  ${net_name} "  >>  /etc/iproute2/rt_tables 
+
+}
 
 check_max_tun_number() {
 	local used_vpn_cnt=$(wc -l $tun_tmpfile | cut -d ' ' -f1 )
@@ -246,12 +255,12 @@ apply_vpn_to_hole(){
 }
 
 bitcave_init(){
-
 	# generate init configuration for networks
 	for num in $(seq 1 $bitcave_slots) ; do
 		_set_network_bitcave "$num"
 		_set_dhcp_bitcave "$num"
 		_add_firewall_zone_bitcave  "$num"
+		_add_rt_alias  "$num"
 		_set_wifi_bitcave  "$num"
 	done
 
@@ -259,6 +268,14 @@ bitcave_init(){
 	for num in  $(seq 1 $bitcave_slots) ; do
 		_set_network_hole "$num"
 		_add_firewall_zone_hole  "$num"
+
+
+		if [ "$num" -ne "1" ] ; then
+			local src_name=$( _get_firewall_zone_bitcave_name "$num" )
+			local dest_name=$( _get_network_hole_name "$num"  ) 
+			_add_firwall_forward_rule "${src_name}" "${dest_name}" 
+		fi
 	done
 
 }
+
