@@ -16,28 +16,28 @@ define Package/bitcave-vpn-pia/Default
   URL:=http://.,......
   PKGARCH:=all
   MAINTAINER:=Matthias Strubel <matthias.strubel@aod-rpg.de>
-  DEPENDS:=bitcave +bitcave-vpn-pia  +openvpn
+  DEPENDS:=bitcave +bitcave-vpn-pia 
 endef
 
 
 define Package/bitcave-vpn-pia
 	$(call Package/bitcave-vpn-pia/Default)
-	DEPENDS:=bitcave +openvpn
+	DEPENDS:=bitcave
 endef
 
 define Package/bitcave-vpn-pia-Australia
   $(call Package/bitcave-vpn-pia/Default)
   TITLE:=Private Internet Access - Endpoint located in Australia 
-  VARIANT:=AUST
+  VARIANT:=Australia
 endef
-ifeq ($(BUILD_VARIANT),AUST)
+ifeq ($(BUILD_VARIANT),Australia)
 	UCI_TAG:=PIA_AUST
 	UCI_VPN_SERVER:="aus.privateinternetaccess.com 1194"
 endif
 
-define Package/bitcave-vpn-pia-Canada-North-York
+define Package/bitcave-vpn-pia-CANY
   $(call Package/bitcave-vpn-pia/Default)
-  TITLE:=Private Internet Access - Endpoint located in Canada-North-York 
+  TITLE:=Private Internet Access - Endpoint located in Canada NorthYork 
   VARIANT:=CANY
 endef
 ifeq ($(BUILD_VARIANT),CANY)
@@ -45,9 +45,9 @@ ifeq ($(BUILD_VARIANT),CANY)
 	UCI_VPN_SERVER:="ca.privateinternetaccess.com 1194"
 endif
 
-define Package/bitcave-vpn-pia-Canada-Toronto
+define Package/bitcave-vpn-pia-CATO
   $(call Package/bitcave-vpn-pia/Default)
-  TITLE:=Private Internet Access - Endpoint located in Canada-Toronto 
+  TITLE:=Private Internet Access - Endpoint located in Canada Toronto 
   VARIANT:=CATO
 endef
 ifeq ($(BUILD_VARIANT),CATO)
@@ -268,7 +268,7 @@ define Package/bitcave-vpn-pia/Default/postinst
 	uci set openvpn.$(UCI_TAG)=openvpn
 	uci set openvpn.$(UCI_TAG).enabled='0'
 	uci set openvpn.$(UCI_TAG).client='1'
-	uci set openvpn.$(UCI_TAG).dev=$$( get_tun_name )
+	uci set openvpn.$(UCI_TAG).dev=`get_tun_name `
 	uci set openvpn.$(UCI_TAG).proto=udp
 	uci set openvpn.$(UCI_TAG).remote=$(UCI_VPN_SERVER)
 	uci set openvpn.$(UCI_TAG).resolv_retry=infinite
@@ -288,7 +288,8 @@ define Package/bitcave-vpn-pia/Default/postinst
 	uci set openvpn.$(UCI_TAG).up=/etc/openvpn/openvpn-var1.sh
 	uci set openvpn.$(UCI_TAG).route_nopull='0'
 	uci add_list openvpn.$(UCI_TAG).auth_user_pass=/etc/openvpn/PIA.auth
-
+	uci commit
+	
 exit 0
 endef
 
@@ -312,8 +313,8 @@ endef
 
 $(eval $(call BuildPackage,bitcave-vpn-pia))
 $(eval $(call BuildPlugin,bitcave-vpn-pia-Australia))
-$(eval $(call BuildPlugin,bitcave-vpn-pia-Canada-North-York))
-$(eval $(call BuildPlugin,bitcave-vpn-pia-Canada-Toronto))
+$(eval $(call BuildPlugin,bitcave-vpn-pia-CANY))
+$(eval $(call BuildPlugin,bitcave-vpn-pia-CATO))
 $(eval $(call BuildPlugin,bitcave-vpn-pia-France))
 $(eval $(call BuildPlugin,bitcave-vpn-pia-Germany))
 $(eval $(call BuildPlugin,bitcave-vpn-pia-Hong-Kong))
