@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=bitcave-vpn-pia
-PKG_VERSION:=0.0.2
-PKG_RELEASE:=2
+PKG_VERSION:=0.0.3
+PKG_RELEASE:=3
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)
 
@@ -16,12 +16,13 @@ define Package/bitcave-vpn-pia/Default
   URL:=http://.,......
   PKGARCH:=all
   MAINTAINER:=Matthias Strubel <matthias.strubel@aod-rpg.de>
-  DEPENDS:=bitcave
+  DEPENDS:=bitcave +bitcave-vpn-pia  +openvpn
 endef
 
 
 define Package/bitcave-vpn-pia
 	$(call Package/bitcave-vpn-pia/Default)
+	DEPENDS:=bitcave +openvpn
 endef
 
 define Package/bitcave-vpn-pia-Australia
@@ -245,9 +246,8 @@ define Package/conffiles
 endef
 
 define Package/bitcave-vpn-pia/install
-	$(call Package/bitcave-vpn-pia/Default/install)
+	$(call Package/bitcave-vpn-pia/Default/install,$(1))
 endef
-
 
 
 define Package/bitcave-vpn-pia/Default/install
@@ -261,29 +261,33 @@ endef
 
 
 define Package/bitcave-vpn-pia/Default/postinst
-#!/bin/sh
+	#!/bin/sh
 	
-. /usr/sbin/bitcave_lib.sh
+	. /usr/sbin/bitcave_lib.sh
 
-uci set openvpn.$(UCI_TAG)=openvpn
-uci set openvpn.$(UCI_TAG).enabled='0'
-uci set openvpn.$(UCI_TAG).client='1'
-uci set openvpn.$(UCI_TAG).dev=$$( get_tun_name )
-uci set openvpn.$(UCI_TAG).proto=udp
-uci set openvpn.$(UCI_TAG).remote=$(UCI_VPN_SERVER)
-uci set openvpn.$(UCI_TAG).resolv_retry=infinite
-uci set openvpn.$(UCI_TAG).nobind=1
-uci set openvpn.$(UCI_TAG).persist_key=1
-uci set openvpn.$(UCI_TAG).persist_tun=1
-uci set openvpn.$(UCI_TAG).ca=/etc/openvpn/PIA-ca.crt
-uci set openvpn.$(UCI_TAG).tls_client=1
-uci set openvpn.$(UCI_TAG).remote_cert_tls=server
-uci set openvpn.$(UCI_TAG).auth_user_pass=/etc/openvpn/PIA.auth
-uci set openvpn.$(UCI_TAG).comp_lzo=1
-uci set openvpn.$(UCI_TAG).verb=1
-uci set openvpn.$(UCI_TAG).reneg_sec=0
-uci set openvpn.$(UCI_TAG).crl_verify=/etc/openvpn/PIA-crl.pem
-
+	uci set openvpn.$(UCI_TAG)=openvpn
+	uci set openvpn.$(UCI_TAG).enabled='0'
+	uci set openvpn.$(UCI_TAG).client='1'
+	uci set openvpn.$(UCI_TAG).dev=$$( get_tun_name )
+	uci set openvpn.$(UCI_TAG).proto=udp
+	uci set openvpn.$(UCI_TAG).remote=$(UCI_VPN_SERVER)
+	uci set openvpn.$(UCI_TAG).resolv_retry=infinite
+	uci set openvpn.$(UCI_TAG).nobind=1
+	uci set openvpn.$(UCI_TAG).persist_key=1
+	uci set openvpn.$(UCI_TAG).persist_tun=1
+	uci set openvpn.$(UCI_TAG).ca=/etc/openvpn/PIA-ca.crt
+	uci set openvpn.$(UCI_TAG).tls_client=1
+	uci set openvpn.$(UCI_TAG).remote_cert_tls=server
+	uci set openvpn.$(UCI_TAG).comp_lzo=yes
+	uci set openvpn.$(UCI_TAG).verb=3
+	uci set openvpn.$(UCI_TAG).reneg_sec=0
+	uci set openvpn.$(UCI_TAG).crl_verify=/etc/openvpn/PIA-crl.pem
+	uci set openvpn.$(UCI_TAG).script_security=2
+	uci set openvpn.$(UCI_TAG).route_noexec='1'
+	uci set openvpn.$(UCI_TAG).down=/etc/openvpn/openvpn-var1.sh
+	uci set openvpn.$(UCI_TAG).up=/etc/openvpn/openvpn-var1.sh
+	uci set openvpn.$(UCI_TAG).route_nopull='0'
+	uci add_list openvpn.$(UCI_TAG).auth_user_pass=/etc/openvpn/PIA.auth
 
 exit 0
 endef
@@ -306,13 +310,13 @@ define BuildPlugin
   $$(eval $$(call BuildPackage,$(1)))
 endef
 
-#$(eval $(call BuildPackage,bitcave-vpn-pia))
+$(eval $(call BuildPackage,bitcave-vpn-pia))
 $(eval $(call BuildPlugin,bitcave-vpn-pia-Australia))
 $(eval $(call BuildPlugin,bitcave-vpn-pia-CANY))
 $(eval $(call BuildPlugin,bitcave-vpn-pia-CATO))
 $(eval $(call BuildPlugin,bitcave-vpn-pia-France))
 $(eval $(call BuildPlugin,bitcave-vpn-pia-Germany))
-$(eval $(call BuildPlugin,bitcave-vpn-pia-HongKong))
+$(eval $(call BuildPlugin,bitcave-vpn-pia-Hong-Kong))
 $(eval $(call BuildPlugin,bitcave-vpn-pia-Israel))
 $(eval $(call BuildPlugin,bitcave-vpn-pia-Japan))
 $(eval $(call BuildPlugin,bitcave-vpn-pia-Netherlands))
@@ -321,7 +325,7 @@ $(eval $(call BuildPlugin,bitcave-vpn-pia-Sweden))
 $(eval $(call BuildPlugin,bitcave-vpn-pia-Switzerland))
 $(eval $(call BuildPlugin,bitcave-vpn-pia-UK-London))
 $(eval $(call BuildPlugin,bitcave-vpn-pia-UK-Southampton))
-$(eval $(call BuildPlugin,bitcave-vpn-pia-California))
+$(eval $(call BuildPlugin,bitcave-vpn-pia-US-California))
 $(eval $(call BuildPlugin,bitcave-vpn-pia-US-East))
 $(eval $(call BuildPlugin,bitcave-vpn-pia-US-Florida))
 $(eval $(call BuildPlugin,bitcave-vpn-pia-US-Midwest))
