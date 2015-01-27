@@ -30,14 +30,14 @@ define Package/bitcave-vpn-pia-Australia
   TITLE:=Private Internet Access - Endpoint located in Australia 
   VARIANT:=Australia
 endef
-ifeq ($(BUILD_VARIANT),Australia)
+ifeq ($(BUILD_VARIANT),AUST)
 	UCI_TAG:=PIA_AUST
 	UCI_VPN_SERVER:="aus.privateinternetaccess.com 1194"
 endif
 
-define Package/bitcave-vpn-pia-CANY
+define Package/bitcave-vpn-pia-Canada-North-York
   $(call Package/bitcave-vpn-pia/Default)
-  TITLE:=Private Internet Access - Endpoint located in Canada NorthYork 
+  TITLE:=Private Internet Access - Endpoint located in Canada North York 
   VARIANT:=CANY
 endef
 ifeq ($(BUILD_VARIANT),CANY)
@@ -45,7 +45,7 @@ ifeq ($(BUILD_VARIANT),CANY)
 	UCI_VPN_SERVER:="ca.privateinternetaccess.com 1194"
 endif
 
-define Package/bitcave-vpn-pia-CATO
+define Package/bitcave-vpn-pia-Canada-Toronto
   $(call Package/bitcave-vpn-pia/Default)
   TITLE:=Private Internet Access - Endpoint located in Canada Toronto 
   VARIANT:=CATO
@@ -67,7 +67,7 @@ endif
 
 define Package/bitcave-vpn-pia-Germany
   $(call Package/bitcave-vpn-pia/Default)
-  TITLE:=Private Internet Access - Endpoint located in GERMANY
+  TITLE:=Private Internet Access - Endpoint located in Germany
   VARIANT:=GER
 endef
 ifeq ($(BUILD_VARIANT),GER)
@@ -313,8 +313,8 @@ endef
 
 $(eval $(call BuildPackage,bitcave-vpn-pia))
 $(eval $(call BuildPlugin,bitcave-vpn-pia-Australia))
-$(eval $(call BuildPlugin,bitcave-vpn-pia-CANY))
-$(eval $(call BuildPlugin,bitcave-vpn-pia-CATO))
+$(eval $(call BuildPlugin,bitcave-vpn-pia-Canada-North-York))
+$(eval $(call BuildPlugin,bitcave-vpn-pia-Canada-Toronto))
 $(eval $(call BuildPlugin,bitcave-vpn-pia-France))
 $(eval $(call BuildPlugin,bitcave-vpn-pia-Germany))
 $(eval $(call BuildPlugin,bitcave-vpn-pia-Hong-Kong))
