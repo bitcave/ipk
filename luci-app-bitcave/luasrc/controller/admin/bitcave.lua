@@ -2,8 +2,9 @@ module("luci.controller.admin.bitcave", package.seeall)
 
 function index()
 
-        entry({"admin", "bitcave"}, template("bitcave/index"), _("Bitcave"), 10)
+        entry({"admin", "bitcave"}, template("bitcave/bitcave_overview"), _("Bitcave"), 10)
 	entry({"admin", "bitcave", "vpnpass"}, call("action_vpn_pw_change"))
+	entry({"admin", "bitcave", "vpn"}, cbi("bitcave/vpn"), _("Bitcave-VPN"), 11)
 
 end
 

@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-bitcave
-PKG_VERSION:=0.1
+PKG_VERSION:=0.3.1
 PKG_RELEASE:=1
 
 PKG_LICENSE:=GPL-3.0
