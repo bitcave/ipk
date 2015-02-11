@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=bitcave-vpn-ipredator
 PKG_VERSION:=0.0.1
-PKG_RELEASE:=3
+PKG_RELEASE:=4
 
 
 include $(INCLUDE_DIR)/package.mk
@@ -61,10 +61,12 @@ define Package/bitcave-vpn-ipredator/postinst
 endef
 
 define Package/bitcave-vpn-ipredator/prerm
-	#!/bin/ssh
-	uci remove openvpn.IPredator
-	uci commit
-	exit 0
+#!/bin/sh
+.  /usr/sbin/bitcave_lib.sh
+remove_vpn_setting  IPredator
+uci remove openvpn.IPredator
+uci commit
+exit 0
 endef
 
 

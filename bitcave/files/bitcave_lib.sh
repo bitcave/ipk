@@ -2,7 +2,7 @@
 
 tun_tmpfile=/tmp/tmp_tun_script.log
 
-max_vpn_settings=9  # somewhere used as literal.. search for varname
+max_vpn_settings=9  
 device_prefix="tun"
 
 # General starting point. 
@@ -11,6 +11,7 @@ device_prefix="tun"
 #                        172.29.30.1 /   for  blan    (Bitcave_2) (wifi only)
 #                        172.29.31.1 /   for  blan    (Bitcave_3) (wifi only)
 # 
+Default_Hostname="Bitcave"
 ip_net="172.29"  
 network_number_start=28
 SSID_Name="Bitcave"
@@ -173,12 +174,28 @@ _check_firewall_forward_rule_exists(){
 			return 0
 		fi
 	done
-	return 0
+	return 99
 }
 
 _del_firewall_forward_rule(){
 	local uci_id=shift
 	uci del firewall."$uci_id"
+}
+
+_check_firewall_zone_exists(){
+	local zone_name="$1"
+
+	local zone_ids=$(uci show firewall | grep =zone | awk -F'[.=]' '{ print $2 }')
+
+	for  id in $zone_ids ; do
+		local uci_name=$(uci get firewall."${id}".name)
+		if  [ "$uci_name" = "$zone_name"  ]  ; then
+			#echo "found $id"
+			firewall_zone_id="$id"
+			return 0
+		fi
+	done
+	return 99
 }
 
 _add_firewall_zone_bitcave(){
@@ -209,6 +226,52 @@ _add_rt_alias(){
 	
 	grep -q "$net_name" /etc/iproute2/rt_tables || \
 		echo "10${bitcave_number}  ${net_name} "  >>  /etc/iproute2/rt_tables 
+
+}
+
+get_pid_of_VPN(){
+	local uci_name="$1"
+	pid=$( ps   | grep "${uci_name}" | grep openvpn | | cut -d ' ' -f2  )
+	
+	test -z $pid && return 99
+	
+	echo $pid 
+	return 0
+}
+
+
+### Used for deinstalling a Bitcave-VPN setting
+remove_vpn_setting(){
+	local uci_name="$1"
+	
+	if   uci get opevpn."${uci_name}"  &> /dev/null ; then
+		is_enabled=$(uci get openvpn"${uci_name}".enabled)
+		
+		# this is for self configured files. We can't do much.. only remove it
+		if uci get openvpn."${uci_name}".config &> /dev/null ; then
+			uci remove openvpn."${uci_name}"=openvpn
+		else
+		# Configured stuff needs to/can be removed from the setup hole configuration.
+			local dev_name=$( uci get openvpn."${uci_name}".dev )
+			local attached_interfaces=$( uci show network | grep $dev_name  | awk -F'[.=]' '{ print $2 }' )
+			for net_name in  $attached_interfaces ; do   #usually only one
+				uci delete network."${net_name}".ifname
+			done
+		fi
+		
+		if  [ "$is_enabled" == "1" ] ; then
+			# Try to kill only corresponding process.
+			local  pid=$( get_pid_of_VPN "${uci_name}" ) 
+			if $? ; then
+				kill $?
+			fi
+		fi
+		
+		uci remove openvpn."${uci_name}"=openvpn
+	else
+		echo "OpenVPN Entry ${uci_name} not found"
+		return 99
+	fi
 
 }
 
@@ -256,25 +319,48 @@ apply_vpn_to_hole(){
 }
 
 bitcave_init(){
+
+	system.@system[0].hostname="${Default_Hostname}"
+
+	#remove example openvpn entries
+	# we keep the examples, and then remove them
+	test -e /etc/config/openvpn.backup || \
+		cp  /etc/config/openvpn /etc/config/openvpn.backup
+		
+	remove_vpn_setting  "custom_config"
+	remove_vpn_setting  "sample_server"
+	remove_vpn_setting  "sample_client"
+
+
 	# generate init configuration for networks
 	for num in $(seq 1 $bitcave_slots) ; do
 		_set_network_bitcave "$num"
 		_set_dhcp_bitcave "$num"
-		_add_firewall_zone_bitcave  "$num"
+		
 		_add_rt_alias  "$num"
 		_set_wifi_bitcave  "$num"
+
+		zone_name=$(_get_firewall_zone_bitcave_name "${num}" )
+		_check_firewall_zone_exists "${zone_name}" || \
+			_add_firewall_zone_bitcave  "$num"
+
 	done
 
 	# generate init configuration for outgoing VPN connections
 	for num in  $(seq 1 $bitcave_slots) ; do
 		_set_network_hole "$num"
-		_add_firewall_zone_hole  "$num"
+		
+		zone_name=$(_get_firewall_zone_hole_name "${num}" )
+		_check_firewall_zone_exists "${zone_name}" || \
+			_add_firewall_zone_hole  "$num"
 
 
 		if [ "$num" -ne "1" ] ; then
 			local src_name=$( _get_firewall_zone_bitcave_name "$num" )
 			local dest_name=$( _get_firewall_zone_hole_name "$num"  ) 
-			_add_firwall_forward_rule "${src_name}" "${dest_name}" 
+			# Only create forward rule if it doesn't already exists
+			_check_firewall_forward_rule_exists   "${src_name}" "${dest_name}"  || \
+				_add_firwall_forward_rule "${src_name}" "${dest_name}" 
 		fi
 	done
 

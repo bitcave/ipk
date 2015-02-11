@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=bitcave
-PKG_VERSION:=0.0.4
+PKG_VERSION:=0.0.5
 PKG_RELEASE:=3
 
 
@@ -48,6 +48,9 @@ define Package/bitcave/install
 		$(1)/etc/hotplug.d/iface \
 		$(1)/etc/openvpn 
 
+	$(INSTALL_BIN)  \
+		./files/run_bitcave_cmd.sh \
+		$(1)/usr/sbin
 	$(INSTALL_BIN)  \
 		./files/bitcave_lib.sh \
 		$(1)/usr/sbin

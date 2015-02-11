@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=bitcave-vpn-pia
 PKG_VERSION:=0.0.3
-PKG_RELEASE:=3
+PKG_RELEASE:=4
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)
 
@@ -295,7 +295,10 @@ endef
 
 define Package/bitcave-vpn-pia/Default/prerm
 #!/bin/sh
-uci remove openvpn.$(UCI_TAG)=openvpn
+.  /usr/sbin/bitcave_lib.sh
+remove_vpn_setting  $(UCI_TAG)
+uci commit
+exit 0
 endef
 
 define BuildPlugin
