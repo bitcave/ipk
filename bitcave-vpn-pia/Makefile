@@ -263,12 +263,10 @@ endef
 define Package/bitcave-vpn-pia/Default/postinst
 	#!/bin/sh
 	
-	. /usr/sbin/bitcave_lib.sh
-
 	uci set openvpn.$(UCI_TAG)=openvpn
 	uci set openvpn.$(UCI_TAG).enabled='0'
 	uci set openvpn.$(UCI_TAG).client='1'
-	uci set openvpn.$(UCI_TAG).dev=`get_tun_name `
+	uci set openvpn.$(UCI_TAG).dev=`  run_bitcave_cmd.sh  get_tun_name `
 	uci set openvpn.$(UCI_TAG).proto=udp
 	uci set openvpn.$(UCI_TAG).remote=$(UCI_VPN_SERVER)
 	uci set openvpn.$(UCI_TAG).resolv_retry=infinite
@@ -295,8 +293,7 @@ endef
 
 define Package/bitcave-vpn-pia/Default/prerm
 #!/bin/sh
-.  /usr/sbin/bitcave_lib.sh
-remove_vpn_setting  $(UCI_TAG)
+run_bitcave_cmd.sh  remove_vpn_setting  $(UCI_TAG)
 uci commit
 exit 0
 endef

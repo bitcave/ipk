@@ -26,14 +26,12 @@ endef
 define Package/bitcave-vpn-ipredator/postinst
 	#!/bin/sh
 
-	. /usr/sbin/bitcave_lib.sh
-	
 	echo "Setting up OpenVPN config"
 	touch /etc/config/openvpn
 	uci set openvpn.IPredator=openvpn
 	uci set openvpn.IPredator.enabled='0'
 	uci set openvpn.IPredator.client='1'
-	uci set openvpn.IPredator.dev=$$( get_tun_name )
+	uci set openvpn.IPredator.dev=$$( run_bitcave_cmd.sh get_tun_name )
 	uci set openvpn.IPredator.proto='udp'
 	uci set openvpn.IPredator.resolv_retry='infinite'
 	uci set openvpn.IPredator.float='1'
@@ -62,8 +60,7 @@ endef
 
 define Package/bitcave-vpn-ipredator/prerm
 #!/bin/sh
-.  /usr/sbin/bitcave_lib.sh
-remove_vpn_setting  IPredator
+run_bitcave_cmd.sh  remove_vpn_setting  IPredator
 uci remove openvpn.IPredator
 uci commit
 exit 0
