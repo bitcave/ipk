@@ -49,7 +49,8 @@ _set_network_bitcave(){
 		uci set network."${network_name}".proto=static
 		uci set network."${network_name}".netmask=255.255.255.0
 		uci set network."${network_name}".ipaddr="${ip_net}.${IP_network}.1"
-		uci set network."${network_name}".ip6assign=60		
+		uci set network."${network_name}".ip6assign=60
+		uci set network."${network_name}".type=bridge
 	else
 		uci set network.lan.ipaddr="${ip_net}.${IP_network}.1"
 	fi
