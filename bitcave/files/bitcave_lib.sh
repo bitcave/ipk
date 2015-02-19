@@ -231,7 +231,7 @@ _add_rt_alias(){
 
 get_pid_of_VPN(){
 	local uci_name="$1"
-	pid=$( ps   | grep "${uci_name}" | grep openvpn | | cut -d ' ' -f2  )
+	pid=$( ps   | grep "${uci_name}" | grep openvpn  | cut -d ' ' -f2  )
 	
 	test -z $pid && return 99
 	
@@ -244,12 +244,12 @@ get_pid_of_VPN(){
 remove_vpn_setting(){
 	local uci_name="$1"
 	
-	if   uci get opevpn."${uci_name}"  &> /dev/null ; then
+	if   uci get openvpn."${uci_name}"  &> /dev/null ; then
 		is_enabled=$(uci get openvpn"${uci_name}".enabled)
 		
 		# this is for self configured files. We can't do much.. only remove it
 		if uci get openvpn."${uci_name}".config &> /dev/null ; then
-			uci remove openvpn."${uci_name}"=openvpn
+			uci delete openvpn."${uci_name}"
 		else
 		# Configured stuff needs to/can be removed from the setup hole configuration.
 			local dev_name=$( uci get openvpn."${uci_name}".dev )
@@ -257,17 +257,18 @@ remove_vpn_setting(){
 			for net_name in  $attached_interfaces ; do   #usually only one
 				uci delete network."${net_name}".ifname
 			done
+			uci delete openvpn."${uci_name}"
 		fi
 		
-		if  [ "$is_enabled" == "1" ] ; then
+		if  [ "$is_enabled" = "1" ] ; then
 			# Try to kill only corresponding process.
 			local  pid=$( get_pid_of_VPN "${uci_name}" ) 
 			if $? ; then
-				kill $?
+				kill $pid
 			fi
 		fi
 		
-		uci remove openvpn."${uci_name}"=openvpn
+		
 	else
 		echo "OpenVPN Entry ${uci_name} not found"
 		return 99
@@ -320,7 +321,7 @@ apply_vpn_to_hole(){
 
 bitcave_init(){
 
-	system.@system[0].hostname="${Default_Hostname}"
+	uci set system.@system[0].hostname="${Default_Hostname}"
 
 	#remove example openvpn entries
 	# we keep the examples, and then remove them

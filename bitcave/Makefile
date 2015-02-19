@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=bitcave
-PKG_VERSION:=0.0.5
+PKG_VERSION:=0.0.6
 PKG_RELEASE:=3
 
 
