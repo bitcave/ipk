@@ -25,7 +25,7 @@ bitcave_slots=3  #Generate which amount of interfaces
 firewall_zone_id=""
 firewall_forward_id=""
 wireless_iface_id=""
-
+openvpn_name=""
 
 _get_firewall_zone_hole_name(){
 	local hole_number="$1"
@@ -274,6 +274,16 @@ get_pid_of_VPN(){
 	return 0
 }
 
+kill_openvpn(){
+	local uci_name="$1"
+	# Try to kill only corresponding process.
+	local  pid=$( get_pid_of_VPN "${uci_name}" ) 
+	if [ "$pid" != "" ] ; then
+		echo "Killing OpenVPN with PID $pid"
+		kill $pid
+	fi
+	return 0
+}
 
 ### Used for deinstalling a Bitcave-VPN setting
 remove_vpn_setting(){
@@ -296,11 +306,7 @@ remove_vpn_setting(){
 		fi
 		
 		if  [ "$is_enabled" = "1" ] ; then
-			# Try to kill only corresponding process.
-			local  pid=$( get_pid_of_VPN "${uci_name}" ) 
-			if $? ; then
-				kill $pid
-			fi
+			kill_openvpn "${uci_name}" 
 		fi
 		
 		
@@ -308,6 +314,43 @@ remove_vpn_setting(){
 		echo "OpenVPN Entry ${uci_name} not found"
 		return 99
 	fi
+
+}
+
+get_vpn_name_with_tun(){
+	local tun_name="$1"
+	
+	local vpn_names="$(uci show openvpn | grep =openvpn | awk -F'[.=]' '{ print $2 }')"
+	for  id in $vpn_names; do
+		
+                local uci_name=$(uci get openvpn."${id}".dev)  || continue   # if not set, we can't do anything about it and skip...
+		if  [ "$tun_name"  = "$uci_name" ]  ; then
+			openvpn_name="$id"
+			return 0
+		fi
+	done
+	
+	return 99
+}
+
+disable_vpn_at_hole(){
+	local $hole_name="$1"
+	
+	local  tun_interface=$( uci get network."${hole_name}".ifname ) 
+	if [ $? -ne 0 ] ; then
+		return 0
+	fi
+	
+	get_vpn_name_with_tun "$tun_interface" 
+	if [ $? -ne 0 ] ; then
+		echo "Can't find openvpn configuration for $tun_interface."
+		echo "Can't disable vpn server. $openvpn_name"
+		return 1
+	fi
+	
+	uci set openvpn."${openvpn_name}".enabled=0
+	kill_openvpn "${openvpn_name}"
+	return 0
 
 }
 
@@ -350,7 +393,9 @@ apply_vpn_to_hole(){
 	local vpn_name="$1"
 	local hole_name="$2"
 	
+	disable_vpn_at_hole  "${hole_name}"
 	uci set network."${hole_name}".ifname=$(uci get openvpn."${vpn_name}".dev )
+	uci set openvpn."${vpn_name}".enabled=1
 	return $?
 }
 
