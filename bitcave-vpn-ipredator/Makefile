@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=bitcave-vpn-ipredator
 PKG_VERSION:=0.0.1
-PKG_RELEASE:=4
+PKG_RELEASE:=5
 
 
 include $(INCLUDE_DIR)/package.mk
@@ -54,7 +54,7 @@ define Package/bitcave-vpn-ipredator/postinst
 	uci set openvpn.IPredator.verb='3'
 	uci add_list openvpn.IPredator.tls_auth='/etc/openvpn/IPredator.se.ta.key'
 	uci add_list openvpn.IPredator.auth_user_pass='/etc/openvpn/IPredator.auth'
-	uci commit
+	uci commit openvpn
 
 endef
 

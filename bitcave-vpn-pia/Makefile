@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=bitcave-vpn-pia
 PKG_VERSION:=0.0.3
-PKG_RELEASE:=4
+PKG_RELEASE:=5
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)
 
@@ -286,7 +286,7 @@ define Package/bitcave-vpn-pia/Default/postinst
 	uci set openvpn.$(UCI_TAG).up=/etc/openvpn/openvpn-var1.sh
 	uci set openvpn.$(UCI_TAG).route_nopull='0'
 	uci add_list openvpn.$(UCI_TAG).auth_user_pass=/etc/openvpn/PIA.auth
-	uci commit
+	uci commit openvpn
 	
 exit 0
 endef
