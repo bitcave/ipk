@@ -18,6 +18,15 @@ SSID_Name="Bitcave"
 Default_Password="BitcaveC"  # Default password for Bitcave.Clear
 bitcave_slots=3  #Generate which amount of interfaces
 
+
+
+### Global variables
+##  Holds UCI of...
+firewall_zone_id=""
+firewall_forward_id=""
+wireless_iface_id=""
+
+
 _get_firewall_zone_hole_name(){
 	local hole_number="$1"
 	echo "fw_hole${hole_number}"
@@ -75,21 +84,47 @@ _set_dhcp_bitcave(){
 	
 }
 
+_check_wifi_entry_with_network_exists(){
+	local network_name="$1"
+	
+
+	local wifi_ids=$(uci show wireless | grep =wifi-iface | awk -F'[.=]' '{ print $2 }')
+
+	for  id in $wifi_ids ; do
+		local uci_network=$(uci get wireless."${id}".network)
+		if  [ "$uci_network" = "$network_name"  ]  ; then
+			#echo "found $id"
+			wireless_iface_id="$id"
+			return 0
+		fi
+	done
+	
+	
+	return 99
+}
+
+
 _set_wifi_bitcave(){
 	local network_number="$1"
+	
+	## radi0 should be detected using wifi-device config section...
 
 	#bitcave_lan0 is br-lan interface
 	if [ "$network_number" != "1" ] ; then
 		local network_name=$( _get_network_bitcave_name "$network_number" )
 		
-		wifi=`uci add wireless wifi-iface`
-		uci set wireless."$wifi".device=radio0
-		uci set wireless."$wifi".mode=ap
-		uci set wireless."$wifi".ssid="${SSID_Name}.${network_number}"
-		uci set wireless."$wifi".network="${network_name}"
-		uci set wireless."$wifi".disabled=1
-		uci set wireless."$wifi".encryption=none
+		
+		_check_wifi_entry_with_network_exists  "$network_name" ||  \
+			wireless_iface_id=`uci add wireless wifi-iface`
+
+		uci set wireless."$wireless_iface_id".device=radio0
+		uci set wireless."$wireless_iface_id".mode=ap
+		uci set wireless."$wireless_iface_id".ssid="${SSID_Name}.${network_number}"
+		uci set wireless."$wireless_iface_id".network="${network_name}"
+		uci set wireless."$wireless_iface_id".disabled=1
+		uci set wireless."$wireless_iface_id".encryption=none
 	else
+		# this is always static
 		uci set "wireless.radio0.disabled=0"
 		uci set wireless.@wifi-iface[0].ssid="${SSID_Name}.Clear"
 		uci set wireless.@wifi-iface[0].encryption="psk2"
